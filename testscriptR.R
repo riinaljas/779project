@@ -71,5 +71,6 @@ y <- y %>%
 y = y %>% left_join(euc2)
 
 
+###next steps: look into shiny, fix code, make it to functions 
 
 
