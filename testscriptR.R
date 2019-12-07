@@ -9,28 +9,32 @@ library(data.table)
 #to be sure that the census data inquiry works 
 #census_api_key('156fda6326a38745b31480cc7848c55e7f4fcf41', overwrite = FALSE, install = TRUE)
 
+#ask input from the user 
+
+myvar <- as.character(readline("Enter the county: "))
+
 #get data for population and income, so that we would have at least two variables 
-countyincome <- get_acs(geography = "county", variables = c(medincome="B19013_001"))
-population <- get_acs(geography = "county", variables = c(pop= "B00001_001E")) 
+countyincome <- get_acs(geography = "county", variables = c(medincome="B19013_001")) %>% select(-variable, -moe)
+population <- get_acs(geography = "county", variables = c(pop= "B00001_001E")) %>% select(-variable)
 
-population <- population %>% rename(pop = estimate) %>% select(-variable)
+population <- population %>% rename(pop = estimate)
 
-countyincome <- left_join(countyincome1, population)
-
-#select only the variables we're interested in 
-countyincome <- countyincome %>%
-  select(-variable, -moe)
-
-#continue with test variable
-
-t <- countyincome %>% remove_rownames() %>% column_to_rownames(var="NAME") %>% select(-GEOID)
+data <- left_join(countyincome, population) 
 
 #be sure there's no NA-s
-t <- na.omit(t)
 
-#calculate the euclidean distance 
-euc <- distance(t, method = "euclidean")
+data <- na.omit(data)
 
+#create a second data variable to remove, so that the code would only deal with numeric variables 
+
+data2 <- data %>% column_to_rownames(var="NAME") %>% select(-GEOID)
+
+#calculate eucledian distance 
+
+eucdata <- as.data.frame(distance(data2, method = "euclidean")) %>%
+  rownames_to_column()
+
+data <- bind_cols(data, eucdata) %>% column_to_rownames(var = "rowname")
 #create a function to sort all the counties by which one is the closest to x
 
 close <- function(x, value, tol=NULL){
@@ -41,16 +45,31 @@ close <- function(x, value, tol=NULL){
   }
 }
 
+#use the "close" function to get the end result "countylist"
 
-# have rownames as names so we know which places we're talking about 
-euc2 <- euc[1] %>% rownames_to_column()
-y <- as.data.frame(close(euc2$v1, value=12603.618, tol=NULL)) 
-y <- y %>% 
-  rename(v1 = `close(euc2$v1, value = 12603.618, tol = NULL)` )
+countylist <- as.data.frame(close(data[ ,myvar], value=0, tol=NULL)) %>% rename(!!myvar := 1)
+countylist <- countylist %>% left_join(data) %>% select(1:5) %>% rename(euclidean_distance = 1) 
 
-y = y %>% left_join(euc2)
+#try with small first 
 
+# small <- head(t, 100)
+# small2 <- head(t2, 100)
+# 
+# eucsmall <- as.data.frame(distance(small2, method = "euclidean")) %>%
+#   rownames_to_column()
+# 
+# small <- bind_cols(small, eucsmall) %>% column_to_rownames(var = "rowname")
 
+#test whether the algorith gives correct results 
+# 
+# countylist25 <- as.data.frame(close(small[ ,myvar], value=0, tol=NULL)) %>% rename(!!myvar := 1)
+# countylist <- as.data.frame(close(small$v25, value=0, tol=NULL)) %>% rename(!!myvar := 1)
+# countylist <- countylist %>% left_join(small) %>% select(1:5)
+
+#test whether they're the same
+#anti_join(countylist25, countylist) %>% nrow()
+u <- bind_cols(y, z)
 ###next steps: look into shiny, fix code, make it to functions 
+
 
 
