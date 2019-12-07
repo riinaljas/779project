@@ -5,7 +5,7 @@ library(fpc)
 library(philentropy)
 library(data.table)
 
-#to be sure that the census data inquiry works 
+#to be sure that the census data inquiry works, needs to be run only first time 
 #census_api_key('156fda6326a38745b31480cc7848c55e7f4fcf41', overwrite = FALSE, install = TRUE)
 
 #ask input from the user 
@@ -36,6 +36,10 @@ eucdata <- as.data.frame(distance(data2, method = "euclidean")) %>%
 
 data <- bind_cols(data, eucdata) %>% column_to_rownames(var = "rowname")
 #create a function to sort all the counties by which one is the closest to x
+
+
+#v1 <- as.data.frame(eucdata$rowname)
+#data <- bind_cols(v1, data) %>% rename(vname = 1)
 
 #write_rds(data, "sampledata.RDS")
 
