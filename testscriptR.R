@@ -37,11 +37,12 @@ eucdata <- as.data.frame(distance(data2, method = "euclidean")) %>%
 data <- bind_cols(data, eucdata) %>% column_to_rownames(var = "rowname")
 #create a function to sort all the counties by which one is the closest to x
 
+data <- readRDS("find_closest_county/sampledata.RDS")
 
-#v1 <- as.data.frame(eucdata$rowname)
-#data <- bind_cols(v1, data) %>% rename(vname = 1)
+v1 <- as.data.frame(eucdata$rowname)
+data <- bind_cols(v1, data) %>% rename(vname = 1)
 
-#write_rds(data, "sampledata.RDS")
+write_rds(data, "sampledata.RDS")
 
 close <- function(x, value, tol=NULL){
   if(!is.null(tol)){
