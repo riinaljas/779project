@@ -1,6 +1,5 @@
 library(tidyverse)  # data manipulation
-library(cluster)    # clustering algorithms
-library(factoextra) #
+library(cluster)  # clustering algorithms
 library(tidycensus)
 library(fpc)
 library(philentropy)
@@ -12,6 +11,7 @@ library(data.table)
 #ask input from the user 
 
 myvar <- as.character(readline("Enter the county: "))
+choicelist <- countyincome$NAME
 
 #get data for population and income, so that we would have at least two variables 
 countyincome <- get_acs(geography = "county", variables = c(medincome="B19013_001")) %>% select(-variable, -moe)
@@ -37,6 +37,8 @@ eucdata <- as.data.frame(distance(data2, method = "euclidean")) %>%
 data <- bind_cols(data, eucdata) %>% column_to_rownames(var = "rowname")
 #create a function to sort all the counties by which one is the closest to x
 
+#write_rds(data, "sampledata.RDS")
+
 close <- function(x, value, tol=NULL){
   if(!is.null(tol)){
     x[abs(x-10) <= tol]
@@ -45,6 +47,10 @@ close <- function(x, value, tol=NULL){
   }
 }
 
+find_close_county(data, myvar)
+
+
+find_close_county()
 #use the "close" function to get the end result "countylist"
 
 countylist <- as.data.frame(close(data[ ,myvar], value=0, tol=NULL)) %>% rename(!!myvar := 1)
@@ -68,7 +74,7 @@ countylist <- countylist %>% left_join(data) %>% select(1:5) %>% rename(euclidea
 
 #test whether they're the same
 #anti_join(countylist25, countylist) %>% nrow()
-u <- bind_cols(y, z)
+
 ###next steps: look into shiny, fix code, make it to functions 
 
 
