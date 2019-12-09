@@ -3269,9 +3269,10 @@ server = function(input, output) {
         cols <- as.numeric(input$columns)
         if(length(input$columns) == 1){
             df <- data.frame(mydata[,cols])
-            df <- bind_cols(df, mylist) %>% 
-                rename(County = `mydata$NAME`, 
+            df <- bind_cols(df, mylist)  %>%
+                           rename(County = `mydata$NAME`, 
                        euc_dist = 1)
+
             output$mytable = renderDataTable(df)
             
         }else{

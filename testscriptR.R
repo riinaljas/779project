@@ -4,9 +4,10 @@ library(tidycensus)
 library(fpc)
 library(philentropy)
 library(data.table)
+library(readr)
 
 #to be sure that the census data inquiry works, needs to be run only first time 
-#census_api_key('156fda6326a38745b31480cc7848c55e7f4fcf41', overwrite = FALSE, install = TRUE)
+census_api_key('156fda6326a38745b31480cc7848c55e7f4fcf41', overwrite = FALSE, install = TRUE)
 
 #ask input from the user 
 
@@ -15,11 +16,17 @@ choicelist <- countyincome$NAME
 
 #get data for population and income, so that we would have at least two variables 
 countyincome <- get_acs(geography = "county", variables = c(medincome="B19013_001")) %>% select(-variable, -moe)
-population <- get_acs(geography = "county", variables = c(pop= "B00001_001E")) %>% select(-variable)
+population <- get_acs(geography = "county", variables = c(pop= "B01003_001E")) %>% select(-variable, -moe)
+age <- get_acs(geography = "county", variables = c(age = "B01002_001E")) %>% select(-variable, -moe)
 
+
+#rename so that we wouldn't have same variables 
 population <- population %>% rename(pop = estimate)
+age <- age %>% rename(age = estimate)
 
-data <- left_join(countyincome, population) 
+data <- left_join(countyincome, population) %>%
+  left_join(age)
+
 
 #be sure there's no NA-s
 
@@ -37,7 +44,7 @@ eucdata <- as.data.frame(distance(data2, method = "euclidean")) %>%
 data <- bind_cols(data, eucdata) %>% column_to_rownames(var = "rowname")
 #create a function to sort all the counties by which one is the closest to x
 
-data <- readRDS("find_closest_county/sampledata.RDS")
+
 
 v1 <- as.data.frame(eucdata$rowname)
 data <- bind_cols(v1, data) %>% rename(vname = 1)
