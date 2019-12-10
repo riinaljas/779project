@@ -8,11 +8,9 @@
 library(shiny)
 library(tidyverse)
 library(DT)
-library(shinyWidgets)
-library(shiny)
-library(tidyverse)
-library(DT)
-library(shinyWidgets)
+
+
+
 
 mydata <- readRDS("sampledata.RDS") 
 mydata$vname <- as.character(mydata$vname)
