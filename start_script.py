@@ -17,3 +17,9 @@ print(c)
 print(states.MD.fips)
 
 print(states.lookup('24').abbr)
+
+
+
+
+mydata = c.acs5.get(('NAME', 'B25034_010E'),
+          {'for': 'state:{}'.format(states.MD.fips)})

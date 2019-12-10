@@ -5,8 +5,8 @@ account: riinaljas
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1573802
-bundleId: 2648463
+bundleId: 2651848
 url: https://riinaljas.shinyapps.io/779project/
-when: 1575713033.26907
+when: 1575878456.46551
 asMultiple: FALSE
 asStatic: FALSE
