@@ -9,8 +9,7 @@ library(shiny)
 library(tidyverse)
 library(DT)
 
-population_and_income <- readRDS("sampledataincome.RDS")
-all <- readRDS("sampledata.RDS")
+
 
 
 mydata <- readRDS("sampledata.RDS")
@@ -3242,69 +3241,46 @@ mydata <- readRDS("sampledata.RDS")
 source("functions.R")
 
 
-population_and_income <- readRDS("sampledataincome.RDS")
 
-parameters <- c(population_and_income, all)
 
 vchoices <- 1:3220
 names(vchoices) <- mydata$NAME
+datasets <- 
 
 mylist <- as.data.frame(mydata$NAME)
+mydata <- readRDS("sampledata.RDS")
 
-mychoices <- c("population", "age", "all")
 ui = fluidPage(
-    sidebarLayout(
-        sidebarPanel(
-            helpText("Order US counties based on the closest county to it
+  sidebarLayout(
+    sidebarPanel(
+      helpText("Order US counties based on the closest county to it
                      based on eucledian distance."),
-            checkboxGroupInput("parameters", "Select parameters", choices = mychoices)
-                        ),
+      checkboxGroupInput("parameters", "Select parameters", choices = c("Population"=,
+                                                                        "Median age",
+                                                                        "Median income", 
+                                                                        "All"=mydata)
+      ),
+      
+      selectInput("columns","Select Counties",choices=vchoices)),
+    mainPanel(
+      
+      dataTableOutput('all')
+      
+      
+      
+      
+      
+    )))
 
-            selectInput("columns","Select Counties",choices=vchoices)),
-        mainPanel(
-
-            dataTableOutput('mytable')
-
-
-        ))
-
-
-server = function(input, output) {
-#    x <- reactive(input$parameter)
-#    mydata <- reactive(if (x =="all") {
-#      mydata=all
-#    } else if (x == "population") {
-#      mydata = population_and_income
-#    } else {mydata == all}
-# })
-
-
-    observeEvent({}
-      input$columns, {
-        cols <- as.numeric(input$columns)
-        if(length(input$columns) == 1) {
+server = function(session, input, output) {
   
-            df <- data.frame(mydata[,cols])
-            df <- bind_cols(df, mylist)  %>%
-                           rename(County = `mydata$NAME`,
-                       euc_dist = 1)
-
-
-            output$mytable = renderDataTable(df)
-       
-
-
-        }else{
-            output$mytable = renderDataTable(mydata[,cols])
-
-
-        }
-
-
-    })
-
-}
-
-
-shinyApp(ui = ui, server = server)
-
+    if input$parameter  
+  
+  
+  
+  
+  
+  
+  
+  observeEvent(input$parameter, 
+               updateSelectInput(parameter, )
