@@ -1,70 +1,68 @@
-# library(tidyverse)  # data manipulation
-# library(cluster)  # clustering algorithms
-# library(tidycensus)
-# library(fpc)
-# library(philentropy)
-# library(data.table)
-# library(readr)
-#
-# #to be sure that the census data inquiry works, needs to be run only first time
+##Script for app 
+##Riin Aljas - aljasriin@gmail.com
+
+library(tidyverse)  # data manipulation
+library(tidycensus) #for census 
+library(cluster)  # clustering algorithms
+library(philentropy) #clustering algrorithms 
+library(data.table) # tables
+library(readr) #read and save inf 
+
+#if any of the packages is missing, use install.packages("libraryname") e.g install.packages("tidyverse")
+
+# to be sure that the census data inquiry works, api needs to be run only first time
 # census_api_key('156fda6326a38745b31480cc7848c55e7f4fcf41', overwrite = FALSE, install = TRUE)
-#
-# #ask input from the user
-#
-# myvar <- as.character(readline("Enter the county: "))
-# choicelist <- countyincome$NAME
-#
-# #get data for population and income, so that we would have at least two variables
-# countyincome <- get_acs(geography = "county", variables = c(medincome="B19013_001")) %>% select(-variable, -moe)
-# population <- get_acs(geography = "county", variables = c(pop= "B01003_001E")) %>% select(-variable, -moe)
-# age <- get_acs(geography = "county", variables = c(age = "B01002_001E")) %>% select(-variable, -moe)
 
 
-# #rename so that we wouldn't have same variables
-# population <- population %>% rename(pop = estimate)
-# age <- age %>% rename(age = estimate)
+
+# #get data for our test variables population and income, so that we would have at least two variables
+countyincome <- get_acs(geography = "county", variables = c(medincome="B19013_001")) %>% select(-variable, -moe)
+population <- get_acs(geography = "county", variables = c(pop= "B01003_001E")) %>% select(-variable, -moe)
+age <- get_acs(geography = "county", variables = c(age = "B01002_001E")) %>% select(-variable, -moe)
+
+
+# rename so that we wouldn't have same variables
+population <- population %>% rename(pop = estimate)
+age <- age %>% rename(age = estimate)
 #
-# data <- left_join(countyincome, population) %>%
-#   left_join(age)
-#
-#
-# #be sure there's no NA-s
-#
-# data <- na.omit(data)
-#
-# #create a second data variable to remove, so that the code would only deal with numeric variables
-#
-# data2 <- data %>% column_to_rownames(var="NAME") %>% select(-GEOID)
-#
-# #calculate eucledian distance
-#
+data <- left_join(countyincome, population) %>%
+  left_join(age)
+
+#be sure there's no NA-s
+data <- na.omit(data)
+
+#create a second data variable to remove GEOID, so that the code would only deal with numeric variables
+
+data2 <- data %>% column_to_rownames(var="NAME") %>% select(-GEOID)
+
+#calculate eucledian distance
+
 eucdata <- as.data.frame(distance(data2, method = "euclidean")) %>%
   rownames_to_column()
  data <- bind_cols(data, eucdata) %>% column_to_rownames(var = "rowname")
 
+##DON'T RUN 
+ #this function is only necessary when we wanna see the list inside our testscript without running the shiny application 
+ 
+ #myvar <- as.character(readline("Enter the county: "))
+ # choicelist <- countyincome$NAME
 
-
-
-
-
-
-  
-  close <- function(x, value, tol=NULL){
-    if(!is.null(tol)){
-      x[abs(x-10) <= tol]
-    } else {
-      x[order(abs(x-10))]
-    }
-  }
-  
-  find_close_county(data, myvar)
-  
-  
-  find_close_county()
-   use the "close" function to get the end result "countylist"
-  
-  countylist <- as.data.frame(close(data[ ,myvar], value=0, tol=NULL)) %>% rename(!!myvar := 1)
-  countylist <- countylist %>% left_join(data) %>% select(1:5) %>% rename(euclidean_distance = 1) 
+  # close <- function(x, value, tol=NULL){
+  #   if(!is.null(tol)){
+  #     x[abs(x-10) <= tol]
+  #   } else {
+  #     x[order(abs(x-10))]
+  #   }
+  # }
+  # 
+  # find_close_county(data, myvar)
+  # 
+  # 
+  # find_close_county()
+  #  use the "close" function to get the end result "countylist"
+  # 
+  # countylist <- as.data.frame(close(data[ ,myvar], value=0, tol=NULL)) %>% rename(!!myvar := 1)
+  # countylist <- countylist %>% left_join(data) %>% select(1:5) %>% rename(euclidean_distance = 1) 
   
   #try with small first 
 # 
@@ -122,19 +120,9 @@ eucdata <- as.data.frame(distance(data2, method = "euclidean")) %>%
 
 
 
-##LONGCODE-----
+##LONGCODE-----for reading only go straight to endlongcode from the contents
 
-
-
-data2 <- data %>% column_to_rownames(var="NAME") %>% select(-GEOID)
-
-#calculate eucledian distance
-
-eucdata <- as.data.frame(distance(data2, method = "euclidean")) %>%
-  rownames_to_column()
-
-data <- bind_cols(eucdata, data) %>% column_to_rownames(var = "rowname")
-
+#This is prep for shiny app 
 
 data <- data %>%
   rename(
@@ -3361,10 +3349,6 @@ data <- data %>%
 
 #endoflongcode------
 
-
+#save data for faster loading in the future 
 #write_rds(data, "sampledata.RDS")
-
-
-
-write_rds(data, "sampledataincome.RDS")
 
