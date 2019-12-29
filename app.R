@@ -13,6 +13,7 @@ library(DT)
 
 
 
+
 mydata <- readRDS("sampledata.RDS")
 
 source("functions.R")
@@ -60,10 +61,13 @@ server = function(input, output) {
             df <- data.frame(mydata[,cols])
             df <- bind_cols(df, mylist)  %>%
                            rename(County = `mydata$NAME`,
-                       euc_dist = 1)
+                       euc_dist = 1) 
+           
 
 
-            output$mytable = renderDataTable(df)
+            output$mytable = renderDataTable(
+              df, options = list(
+                order = list(list(1, 'asc'))))
        
 
 
