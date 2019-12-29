@@ -26,15 +26,16 @@ names(vchoices) <- mydata$NAME
 mylist <- as.data.frame(mydata$NAME)
 
 mychoices <- c("population", "age", "median income", "all")
-ui = fluidPage(
+ui = fluidPage(theme = "bootstrap.min.css",
+  titlePanel("Find similar counties"),
     sidebarLayout(
         sidebarPanel(
-            helpText("Order US counties based on the closest county to it
+            helpText("Order US counties based on the closest county to the county chosen,
                      based on eucledian distance."),
             checkboxGroupInput("parameters", "Select parameters", choices = mychoices)
                         ),
 
-            selectInput("columns","Select Counties",choices=vchoices)),
+            selectInput("columns","Select County",choices=vchoices)),
         mainPanel(
 
             dataTableOutput('mytable')
