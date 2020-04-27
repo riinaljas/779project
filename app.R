@@ -31,7 +31,8 @@ ui = fluidPage(theme = "bootstrap.min.css",
     sidebarLayout(
         sidebarPanel(
             helpText("Order US counties based on the closest county to the county chosen,
-                     based on eucledian distance."),
+                     based on eucledian distance. For this test version, all three parameters 
+have to be checked for the application to work properly. The smaller the distance, the closer the county. Table is searchable and sortable."),
             checkboxGroupInput("parameters", "Select parameters", choices = mychoices)
                         ),
 
